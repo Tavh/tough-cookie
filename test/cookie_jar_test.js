@@ -541,4 +541,20 @@ vows
       }
     }
   })
+  .addBatch({
+    "Prototype Pollution": {
+      "Set cookie with '__proto__' domain": {
+        topic: function () {
+          const allowPublicSuffixesConfig = {rejectPublicSuffixes: false};
+          const cookieJar = new CookieJar(null, allowPublicSuffixesConfig);
+          const cookie = Cookie.parse("a=b; Domain=__proto__; Path=/polluted_path");
+          cookieJar.setCookie(cookie, 'http://__proto__/index.html', this.callback);
+        },
+        "'Object.prototype' was not polluted thus no unexpected properties were inherited": function() {
+          const exampleObject = {};
+          assert(exampleObject["/polluted_path"] === undefined);
+        }
+      }
+    }
+  }) 
   .export(module);
